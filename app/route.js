@@ -5,7 +5,11 @@ import { ethers } from 'ethers';
 import frcAbi from './frc-abi.json';
 
 const frcSigner = ethers.Wallet.fromPhrase(process.env.SIGNER_SEED_PHRASE);
-frcSigner.getAddress().then(address => console.log(`Loaded signer: ${address}`))
+let signer = null;
+frcSigner.getAddress().then(address => {
+  signer = address;
+  console.log(`Loaded signer: ${signer}`)
+})
 
 const provider = new ethers.JsonRpcProvider(process.env.BASE_RPC_URL, undefined, {
   staticNetwork: true,
@@ -115,7 +119,9 @@ export async function POST (request, context) {
     await verifyFidAddress(likedFid, likedAddress);
     const rangeClose = parseInt((await contract.getLikerLikedRangeClose(likedFid, likerFid)).toString());
     const result = {
-      mintArguments: [],
+      arguments: [],
+      signature: '',
+      signer,
     };
     const {
       startTime,
@@ -126,7 +132,7 @@ export async function POST (request, context) {
     if (numTokens === 0) {
       throw new Error("No tokens to mint");
     }
-    result.mintArguments = [
+    result.arguments = [
       likedAddress,
       likedFid,
       [likerFid],
@@ -136,11 +142,11 @@ export async function POST (request, context) {
     ];
     const contractMessage = ethers.AbiCoder.defaultAbiCoder().encode(
       [ "address", "uint256", "uint256[]", "uint256[]", "uint256[]", "uint256[]" ],
-      result.mintArguments
+      result.arguments
     );
     const contractMsgHash = ethers.keccak256(contractMessage);
     const contractSignature = await frcSigner.signMessage(ethers.getBytes(contractMsgHash));
-    result.mintArguments.push([contractSignature]);
+    result.signature = contractSignature;
     return NextResponse.json({ result }, { status: 200 });
   } catch (e) {
     console.error(e);
