@@ -31,7 +31,20 @@ Test that your connection is working:
 Above should return:
 
 ```
-{"result":{"mintArguments":["0xfc002115e148bb57a0d3E9014B9C0D4fDc9cE090","319813",["279887"],[1],[1708220092],[1708220092],["0xe059e21281f5c10a80171548ce466b92d574a6f9504346421e9a86c0775e0e3e72190b14fd4ceb1ed4614f1c662ed8c160c8ec1dd317ea48d717f5121d8a21821c"]]}}
+{
+    "result": {
+        "arguments": [
+            "0xfc002115e148bb57a0d3E9014B9C0D4fDc9cE090",
+            "319813",
+            ["279887"],
+            [1],
+            [1708220092],
+            [1708220092]
+        ],
+        "signature": "0x...",
+        "signer": "0x..."
+    }
+}
 ```
 
 ## Deploy on Vercel
