@@ -28,15 +28,16 @@ Test that your connection is working:
       http://localhost:3000
 ```
 
-Above should return:
+Should return data formatted like:
 
 ```
 {
     "result": {
         "arguments": [
-            "0xfc002115e148bb57a0d3E9014B9C0D4fDc9cE090",
-            "319813",
             ["279887"],
+            ["319813"],
+            ["0xfc002115e148bb57a0d3E9014B9C0D4fDc9cE090"],
+            ["0x0000000000000000000000000000000000000000"],
             [1],
             [1708220092],
             [1708220092]
