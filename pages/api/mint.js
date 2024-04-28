@@ -1,20 +1,19 @@
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 
-import * as hub from '../hub';
-import * as chain from '../chain';
+import * as hub from '../../lib/hub';
+import * as chain from '../../lib/chain';
 
-export async function GET (request, context) {
-  return NextResponse.json({ result: 'OK' }, { status: 200 });
-}
-
-export async function POST (request, context) {
+export default async function POST (req, res) {
+  if (req.method !== 'POST') {
+    return res.status(404).json({ error: 'Not Found' });
+  }
   try {
-    const authToken = (request.headers.get('authorization') || '').split("Bearer ").at(1);
+    const authToken = (req.headers['authorization'] || '').split("Bearer ").at(1);
     if (authToken !== process.env.BEARER_TOKEN) {
-      return NextResponse.json({ error: 'Invalid Token' }, { status: 401 });
+      return res.status(401).json({ error: 'Invalid token' });
     }
-    const body = await request.json();
+    const { body } = req;
     const likerFid = Number(body.likerFid);
     const likedFid = Number(body.likedFid);
     const likerAddress = '0x0000000000000000000000000000000000000000';
@@ -58,10 +57,10 @@ export async function POST (request, context) {
     const hash = ethers.keccak256(message);
     const signature = await signer.signMessage(ethers.getBytes(hash));
     result.signature = signature;
-    return NextResponse.json({ result }, { status: 200 });
+    return res.status(200).json({ result });
   } catch (e) {
     console.error(e);
-    return NextResponse.json({ error: e.toString() }, { status: 500 });
+    return res.status(500).json({ error: e.toString() });
   }
 }
 
